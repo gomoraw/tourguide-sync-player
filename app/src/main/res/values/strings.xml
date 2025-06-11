@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Tour Guide Sync Player</string>
+
+    <!-- Launch Screen -->
+    <string name="launch_title">役割を選択してください</string>
+    <string name="launch_button_guide">私はガイドです</string>
+    <string name="launch_button_user">私はユーザーです</string>
+
+    <!-- Guide Screen -->
+    <string name="guide_screen_title">ガイドモード</string>
+    <string name="guide_top_bar_title">ガイドモード | 接続中: %d人</string>
+    <string name="guide_top_bar_pin">接続PIN: %s</string>
+    <string name="guide_video_list_header">動画コンテンツ</string>
+    <string name="guide_connected_users_header">接続中のユーザー</string>
+    <string name="guide_no_users_connected">まだ誰も接続していません。</string>
+
+    <!-- User Screen -->
+    <string name="user_screen_title">ユーザーモード</string>
+    <string name="user_status_searching">ガイドを探しています…</string>
+    <string name="user_status_connecting">ガイドに接続中…</string>
+    <string name="user_status_connected">ガイドに接続済み</string>
+    <string name="user_status_waiting">ガイドの指示を待っています…</string>
+    <!-- 修正箇所: %d を %1$d と %2$d に変更 -->
+    <string name="user_status_reconnecting">再接続しています... (試行 %1$d/%2$d)</string>
+    <string name="user_status_disconnected">ガイドとの接続が切れました。</string>
+    <string name="user_status_video_error">動画の読み込みに失敗しました。</string>
+
+    <!-- PIN Dialog -->
+    <string name="pin_dialog_title">\'%s\' への接続</string>
+    <string name="pin_dialog_message">ガイドが表示している4桁のPINコードを入力してください。</string>
+    <string name="pin_dialog_textfield_label">PINコード</string>
+    <string name="pin_dialog_button_connect">接続</string>
+    <string name="pin_dialog_button_cancel">キャンセル</string>
+    <string name="pin_error_invalid">PINコードが正しくありません。</string>
+    <string name="pin_error_rate_limit">試行回数が上限に達しました。しばらくしてから再度お試しください。</string>
+    <string name="pin_error_protocol_mismatch">アプリのバージョンが異なります。</string>
+    <string name="pin_error_unknown">不明なエラーが発生しました。</string>
+
+    <!-- Permissions -->
+    <string name="permission_required_title">許可が必要です</string>
+    <string name="permission_required_message">この機能を利用するには、近くのデバイスの検索を許可する必要があります。</string>
+    <string name="permission_permanently_denied_message">必要な権限が拒否されました。設定画面から権限を許可してください。</string>
+    <string name="permission_button_open_settings">設定を開く</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">同期サービス</string>
+    <string name="notification_channel_description">バックグラウンドでの接続維持のための通知</string>
+    <string name="user_notification_title">ツアーガイドに接続中</string>
+    <string name="user_notification_text">同期サービスが動作しています。</string>
+
+</resources>
