@@ -1,104 +1,95 @@
-// パス: app/src/main/java/com/example/tourguidesyncplayer/data/network/GuideSocketServer.kt
+// GuideSocketServer.kt【最新版】
 package com.example.tourguidesyncplayer.data.network
 
 import com.example.tourguidesyncplayer.data.model.Command
-import io.ktor.serialization.kotlinx.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import io.ktor.server.routing.*
-import io.ktor.server.websocket.*
-import io.ktor.websocket.*
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
+import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
+import io.ktor.server.routing.routing
+import io.ktor.server.websocket.WebSockets
+import io.ktor.server.websocket.pingPeriod
+import io.ktor.server.websocket.timeout
+import io.ktor.server.websocket.webSocket
+import io.ktor.websocket.DefaultWebSocketServerSession
+import io.ktor.websocket.Frame
+import io.ktor.websocket.readText
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.time.Duration
-import java.util.concurrent.ConcurrentHashMap
+import java.util.Collections
+import javax.inject.Inject
+import javax.inject.Singleton
 
-interface ServerCallback {
-    suspend fun onClientConnected(session: DefaultWebSocketServerSession, clientId: String)
-    suspend fun onClientDisconnected(clientId: String)
-    suspend fun onCommandReceived(clientId: String, command: Command)
-}
+@Singleton
+class GuideSocketServer @Inject constructor() {
 
-class GuideSocketServer(
-    private val json: Json,
-    private val callback: ServerCallback
-) {
-    private var server: NettyApplicationEngine? = null
-    private val clientSessions = ConcurrentHashMap<String, DefaultWebSocketServerSession>()
+    private val _commandFlow = MutableSharedFlow<Command>()
+    val commandFlow = _commandFlow.asSharedFlow()
+    private val clients = Collections.synchronizedSet<DefaultWebSocketServerSession>(LinkedHashSet())
 
-    fun start(port: Int) {
-        // server?.application?.isActive は server?.application?.isActive でも同じ
-        if (server?.application?.isActive == true) { // 修正箇所 (import io.ktor.server.application.* を追加することで解決)
-            Timber.w("Server is already running.")
-            return
+    private val server: ApplicationEngine = embeddedServer(Netty, port = 8080) {
+        install(WebSockets) {
+            pingPeriod = Duration.ofSeconds(15)
+            timeout = Duration.ofSeconds(15)
+            maxFrameSize = Long.MAX_VALUE
+            masking = false
         }
-        server = embeddedServer(Netty, port = port, host = "0.0.0.0") {
-            install(WebSockets) {
-                pingPeriod = Duration.ofSeconds(15)
-                timeout = Duration.ofSeconds(15)
-                maxFrameSize = Long.MAX_VALUE
-                masking = false
-                contentConverter = KotlinxWebsocketSerializationConverter(json)
-            }
-            routing {
-                webSocket(NetworkConstants.WEBSOCKET_PATH) {
-                    val clientId = generateClientId()
-                    Timber.i("Client attempting to connect with internal ID: $clientId")
-                    clientSessions[clientId] = this
-                    callback.onClientConnected(this, clientId)
-
-                    try {
-                        for (frame in incoming) {
-                            if (frame is Frame.Text) {
-                                val command = json.decodeFromString<Command>(frame.readText())
-                                Timber.d("Received command from $clientId: $command")
-                                callback.onCommandReceived(clientId, command)
+        install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) {
+            json()
+        }
+        routing {
+            webSocket("/sync") {
+                clients += this
+                Timber.d("Client connected! Total clients: ${clients.size}")
+                try {
+                    for (frame in incoming) {
+                        if (frame is Frame.Text) {
+                            val receivedText = frame.readText()
+                            Timber.d("Received: $receivedText")
+                            try {
+                                val command = Json.decodeFromString<Command>(receivedText)
+                                _commandFlow.emit(command)
+                            } catch (e: Exception) {
+                                Timber.e(e, "Error decoding command")
                             }
                         }
-                    } catch (e: Exception) {
-                        Timber.e(e, "Error during WebSocket session with $clientId")
-                    } finally {
-                        Timber.i("Client disconnected: $clientId")
-                        clientSessions.remove(clientId)
-                        callback.onClientDisconnected(clientId)
                     }
+                } finally {
+                    clients -= this
+                    Timber.d("Client disconnected! Total clients: ${clients.size}")
                 }
             }
-        }.start(wait = false)
-        Timber.i("WebSocket server started on port $port")
+        }
+    }
+
+    fun start() {
+        if (server.isActive.not()) {
+            server.start(wait = false)
+            Timber.d("Server started.")
+        }
     }
 
     fun stop() {
-        server?.stop(1000, 2000)
-        server = null
-        clientSessions.clear()
-        Timber.i("WebSocket server stopped.")
-    }
-
-    suspend fun sendCommand(clientId: String, command: Command) {
-        clientSessions[clientId]?.let { session ->
-            try {
-                session.sendSerialized(command)
-                Timber.d("Sent command to $clientId: $command")
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to send command to $clientId")
-            }
+        if (server.isActive) {
+            server.stop(1000, 5000)
+            Timber.d("Server stopped.")
         }
     }
 
     suspend fun broadcastCommand(command: Command) {
-        Timber.i("Broadcasting command to all ${clientSessions.size} clients: $command")
-        clientSessions.values.forEach { session ->
+        val commandJson = Json.encodeToString(command)
+        clients.forEach { session ->
             try {
-                session.sendSerialized(command)
+                session.send(Frame.Text(commandJson))
             } catch (e: Exception) {
-                Timber.w(e, "Failed to broadcast to a client. It might be disconnected.")
+                Timber.e(e, "Error broadcasting to client")
             }
         }
-    }
-
-    private fun generateClientId(): String {
-        return "client_${System.currentTimeMillis()}_${(1000..9999).random()}"
     }
 }

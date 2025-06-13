@@ -1,7 +1,8 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// build.gradle.kts (Project) 【最新互換版】
 plugins {
-    id("com.android.application") version "8.10.1" apply false
+    // compileSdk 34 と互換性のあるAGP 8.2.2 を使用
+    id("com.android.application") version "8.2.2" apply false
+    // AGP 8.2.2 と互換性のある Kotlin 1.9.22 を使用
     id("org.jetbrains.kotlin.android") version "1.9.22" apply false
-    id("com.google.dagger.hilt.android") version "2.51.1" apply false
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22" apply false
+    id("com.google.dagger.hilt.android") version "2.48" apply false // Hiltは安定版のまま
 }

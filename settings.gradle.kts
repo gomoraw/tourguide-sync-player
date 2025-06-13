@@ -1,3 +1,5 @@
+// settings.gradle.kts 全文
+
 pluginManagement {
     repositories {
         google()
@@ -12,6 +14,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
-rootProject.name = "Tour Guide Sync Player"
+rootProject.name = "TourGuideSyncPlayer"
 include(":app")
