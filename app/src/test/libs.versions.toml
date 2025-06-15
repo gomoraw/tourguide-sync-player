@@ -1,0 +1,15 @@
+toml
+[versions]
+kotlin = "1.9.23" // これが Kotlin のバージョンであることを確認
+kotlinComposeCompilerExtension = "1.5.11" // composeOptions と一致
+# ... 他のバージョン
+
+[libraries]
+# androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version = "2024.05.00" } // BOM の更新を検討
+# ... 他のライブラリ
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" } // agp = Android Gradle Plugin のバージョン
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" } // Kotlin のバージョンを使用
+# ... 他のプラグイン

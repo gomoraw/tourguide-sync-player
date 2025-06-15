@@ -1,5 +1,3 @@
-// settings.gradle.kts 全文
-
 pluginManagement {
     repositories {
         google()
@@ -16,3 +14,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "TourGuideSyncPlayer"
 include(":app")
+// 重複した include(":app") を削除
+ 
