@@ -1,4 +1,4 @@
-package com.example.tourguide_sync_player_clean.ui.theme
+package com.example.tourguide_sync_player.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

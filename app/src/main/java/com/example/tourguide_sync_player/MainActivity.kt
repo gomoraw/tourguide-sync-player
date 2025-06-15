@@ -1,4 +1,4 @@
-package com.example.tourguidesyncplayer
+package com.example.tourguide_sync_player
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.tourguidesyncplayer.ui.theme.TourGuideSyncPlayerTheme
+import com.example.tourguide_sync_player.ui.theme.TourGuideSyncPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.example.tourguide_sync_player_clean
+package com.example.tourguide_sync_player
 
 import org.junit.Test
 

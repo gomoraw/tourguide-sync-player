@@ -1,4 +1,4 @@
-package com.example.tourguide_sync_player_clean
+package com.example.tourguide_sync_player
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

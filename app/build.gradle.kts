@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tourguidesyncplayer"
+    namespace = "com.example.tourguide_sync_player"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.tourguidesyncplayer"
+        applicationId = "com.example.tourguide_sync_player"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
