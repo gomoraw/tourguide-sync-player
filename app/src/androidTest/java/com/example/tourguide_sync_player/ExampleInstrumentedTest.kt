@@ -1,3 +1,4 @@
+// ExampleInstrumentedTest.kt 【最終修正版】
 package com.example.tourguide_sync_player
 
 import androidx.test.platform.app.InstrumentationRegistry
@@ -19,6 +20,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.example.tourguide_sync_player_clean", appContext.packageName)
+        assertEquals("com.example.tourguide_sync_player", appContext.packageName) // ★ここを修正
     }
 }

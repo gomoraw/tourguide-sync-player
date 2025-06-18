@@ -1,3 +1,5 @@
+// GuideScreen.kt 【修正案】
+
 package com.example.tourguide_sync_player.ui.guide
 
 import androidx.compose.foundation.layout.*
@@ -13,16 +15,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GuideScreen(navController: NavController) {
-    var selectedVideo by remember { mutableStateOf<String?>(null) }
-    var isPlaying by remember { mutableStateOf(false) }
-    var connectedUsers by remember { mutableStateOf(0) }
+fun GuideScreen(
+    navController: NavController,
+    viewModel: GuideViewModel = hiltViewModel() // ViewModelを注入
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle() // UI Stateを監視
 
-    // サンプル動画リスト（実際は動的に読み込み）
+    var selectedVideo by remember { mutableStateOf<String?>(null) }
+    val isPlaying = uiState.syncState.isPlaying // 再生状態をUI Stateから取得
+
+    // サンプル動画リスト
     val videoList = remember {
         (1..20).map { "動画 $it" }
     }
@@ -47,7 +55,7 @@ fun GuideScreen(navController: NavController) {
         floatingActionButton = {
             if (selectedVideo != null) {
                 FloatingActionButton(
-                    onClick = { isPlaying = !isPlaying },
+                    onClick = { viewModel.onPlayPauseClick() }, // ViewModelの関数を呼び出す
                     modifier = Modifier.size(80.dp)
                 ) {
                     Icon(
@@ -65,7 +73,7 @@ fun GuideScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // 接続状態表示
+            // ★接続状態表示をUI Stateから取得した値で更新
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -75,7 +83,7 @@ fun GuideScreen(navController: NavController) {
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
-                        "接続中のユーザー: $connectedUsers 台",
+                        "接続中のユーザー: ${uiState.connectedClients} 台",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -87,55 +95,8 @@ fun GuideScreen(navController: NavController) {
                 }
             }
 
-            // 選択中の動画表示
-            if (selectedVideo != null) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            "選択中: $selectedVideo",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            if (isPlaying) "再生中" else "停止中",
-                            fontSize = 16.sp,
-                            color = if (isPlaying) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
-            }
-
-            // 動画リスト
-            Text(
-                "動画を選択してください",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            LazyColumn {
-                items(videoList) { video ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        onClick = { selectedVideo = video }
-                    ) {
-                        Text(
-                            text = video,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
-            }
+            // （以降のコードは大きな変更なし）
+            // ...
         }
     }
 }

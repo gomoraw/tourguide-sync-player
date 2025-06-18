@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.TourGuideSyncPlayer" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Base application theme for Material Design 3. -->
+    <!-- parentをMaterial Components for Androidのテーマに変更 -->
+    <style name="Theme.TourGuideSyncPlayer" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/purple_500</item> -->
+    </style>
 
-    <style name="Theme.Tourguidesyncplayerclean" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- 不要な旧テーマの定義は削除済み -->
 </resources>
